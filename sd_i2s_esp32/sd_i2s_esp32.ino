@@ -10,6 +10,17 @@
 #include "Audio.h"
 #include "SD.h"
 #include "FS.h"
+#include <WiFi.h>
+#include <HTTPClient.h>
+
+// wifi credentials 
+const char* ssid = "esp32";
+const char* password = "esp32wifi";
+
+const char* baseUrl = "http://13.235.242.154/write-traffic?t=";
+const char* trafficValues[] = {"0", "1", "2"}; // Array of traffic values for each API
+
+WiFiClient client;
  
 // microSD Card Reader connections
 #define SD_CS          5
@@ -31,6 +42,19 @@
 Audio audio;
  
 void setup() {
+    // Start Serial Port
+    Serial.begin(115200);
+
+    // wifi setup init
+    WiFi.begin(ssid, password);
+    Serial.print("Connecting to WiFi.");
+    while (WiFi.status() != WL_CONNECTED) {
+      delay(500);
+      Serial.print(".");
+    }
+    Serial.println(" connected");
+    Serial.print("IP address: ");
+    Serial.println(WiFi.localIP());
 
     //led pin mode setup
     pinMode(LED_RED, OUTPUT);
@@ -43,9 +67,7 @@ void setup() {
     
     // Initialize SPI bus for microSD Card
     SPI.begin(SPI_SCK, SPI_MISO, SPI_MOSI);
-    
-    // Start Serial Port
-    Serial.begin(115200);
+
     
     // Start microSD Card
     if(!SD.begin(SD_CS))
@@ -84,6 +106,11 @@ void loop()
 
 void audio_eof_mp3(const char *info)
 {
+  String url = "";
+
+  // Create an HTTPClient object
+  HTTPClient http;
+
   // put anything from the original loop function
   static int i=0;
     // audio.connecttoFS(SD,"/WAIT.mp3");
@@ -96,6 +123,11 @@ void audio_eof_mp3(const char *info)
       digitalWrite(LED_RED, HIGH);
       delay(500);
       audio.connecttoFS(SD,"/STOP.mp3");
+      // api call
+      url = String(baseUrl) + "0";
+      http.begin(client, url);
+      http.GET();
+      http.end();
       // delay(2000);    
     }
 
@@ -107,6 +139,11 @@ void audio_eof_mp3(const char *info)
       digitalWrite(LED_YELLOW, HIGH);
       delay(500);
       audio.connecttoFS(SD,"/WAIT.mp3");
+      // api call
+      url = String(baseUrl) + "1";
+      http.begin(client, url);
+      http.GET();
+      http.end();
       // delay(2000);    
     }
 
@@ -118,6 +155,11 @@ void audio_eof_mp3(const char *info)
       digitalWrite(LED_GREEN, HIGH);
       delay(500);
       audio.connecttoFS(SD,"/GO.mp3");
+      // api call
+      url = String(baseUrl) + "2";
+      http.begin(client, url);
+      http.GET();
+      http.end();
       // delay(2000);    
     }
 

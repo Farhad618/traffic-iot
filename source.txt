@@ -6,3 +6,10 @@ https://github.com/schreibfaul1/ESP32-audioI2S/wiki
 
 # loop() function problem
 https://forum.arduino.cc/t/esp32-how-to-play-multiple-audio-files-from-sd/1039033/48
+
+
+########## NOTES ###########
+#select board
+ESP32 Dev Module
+
+# disconnect + - wire defore upload code to board
