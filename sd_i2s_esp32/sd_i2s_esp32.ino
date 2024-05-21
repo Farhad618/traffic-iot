@@ -17,7 +17,7 @@
 const char* ssid = "asdfghjkl";
 const char* password = "esp32wifi";
 
-const char* baseUrl = "http://13.235.134.222/write-traffic?t=";
+const char* baseUrl = "http://192.168.0.101:3001/write-traffic?t=";
 const char* trafficValues[] = {"0", "1", "2"}; // Array of traffic values for each API
 
 WiFiClient client;
@@ -37,7 +37,10 @@ WiFiClient client;
 #define LED_RED       17
 #define LED_YELLOW    16
 #define LED_GREEN     4
- 
+
+// reed switch connection
+#define BTN_REED1     0
+
  // Create Audio object
 Audio audio;
  
@@ -60,6 +63,9 @@ void setup() {
     pinMode(LED_RED, OUTPUT);
     pinMode(LED_YELLOW, OUTPUT);
     pinMode(LED_GREEN, OUTPUT);
+
+    // car ditect reed sw setup
+    pinMode(BTN_REED1, INPUT);
     
     // Set microSD Card CS as OUTPUT and set HIGH
     pinMode(SD_CS, OUTPUT);      
@@ -122,7 +128,12 @@ void audio_eof_mp3(const char *info)
       digitalWrite(LED_GREEN, LOW);  
       digitalWrite(LED_RED, HIGH);
       delay(500);
-      audio.connecttoFS(SD,"/STOP.mp3");
+      if(digitalRead(BTN_REED1)){
+        audio.connecttoFS(SD,"/STOP.mp3");
+      } else {
+        audio.connecttoFS(SD,"/empty.mp3");
+      }
+      
       // api call
       url = String(baseUrl) + "0";
       http.begin(client, url);
@@ -138,7 +149,11 @@ void audio_eof_mp3(const char *info)
       digitalWrite(LED_RED, LOW);  
       digitalWrite(LED_YELLOW, HIGH);
       delay(500);
-      audio.connecttoFS(SD,"/WAIT.mp3");
+      if(digitalRead(BTN_REED1)){
+        audio.connecttoFS(SD,"/WAIT.mp3");
+      } else {
+        audio.connecttoFS(SD,"/empty.mp3");
+      }
       // api call
       url = String(baseUrl) + "1";
       http.begin(client, url);
@@ -154,7 +169,11 @@ void audio_eof_mp3(const char *info)
       digitalWrite(LED_YELLOW, LOW);  
       digitalWrite(LED_GREEN, HIGH);
       delay(500);
-      audio.connecttoFS(SD,"/GO.mp3");
+      if(digitalRead(BTN_REED1)){
+        audio.connecttoFS(SD,"/GO.mp3");
+      } else {
+        audio.connecttoFS(SD,"/empty.mp3");
+      }
       // api call
       url = String(baseUrl) + "2";
       http.begin(client, url);
