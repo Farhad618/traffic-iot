@@ -14,10 +14,10 @@
 #include <HTTPClient.h>
 
 // wifi credentials 
-const char* ssid = "esp32";
+const char* ssid = "asdfghjkl";
 const char* password = "esp32wifi";
 
-const char* baseUrl = "http://13.235.242.154/write-traffic?t=";
+const char* baseUrl = "http://13.235.134.222/write-traffic?t=";
 const char* trafficValues[] = {"0", "1", "2"}; // Array of traffic values for each API
 
 WiFiClient client;

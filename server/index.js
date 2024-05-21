@@ -15,7 +15,7 @@ app.get('/read-traffic', (req, res) => {
     if (err) throw err;
     res.writeHead(200, {'Content-Type': 'text/html'});
     res.write(data);
-    console.log('Data fetched. ' + data)
+    //console.log('Data fetched. ' + data)
     return res.end();
   });
 })
